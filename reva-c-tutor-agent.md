@@ -1,5 +1,5 @@
 # REVA C Programming Tutor Agent — Specification
-**`reva-c-tutor`** | Version 1.0 | REVA University, School of Computing and Information Technology
+**`reva-c-tutor`** | Version 1.0 | REVA University, School of Computer Science and Engineering | Author: Sanjay Chitnis & Claude AI
 
 ---
 
