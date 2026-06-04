@@ -97,15 +97,28 @@ After grading, call `next.sh` again for the next assigned exercise.
 
 ---
 
-## VS Code Shortcuts
+## Running with VS Code Tasks
 
-If you're using VS Code, all the above commands are available as tasks.  
-Press `Ctrl+Shift+P` → **Tasks: Run Task** → choose from:
+If you are using VS Code, you can run all the scripts directly through VS Code's built-in Task runner without using the terminal manually. This is the recommended workflow.
 
-- **REVA: Get Help**
-- **REVA: Grade My Code**
-- **REVA: Next Exercise**
-- **REVA: Register Student**
+### How to Run a Task
+
+1. Press `Ctrl+Shift+P` (Windows/Linux) or `Cmd+Shift+P` (macOS) to open the Command Palette.
+2. Type `Tasks: Run Task` and press `Enter`.
+3. Select the task you want to run from the dropdown list.
+
+### Available Tasks
+
+*   **`REVA: Register Student`**: Registers your profile. When run, VS Code will display prompts at the top of the window asking you to enter:
+    1. Your **Student ID** (e.g., `raj22cs045`)
+    2. Your **Full Name** (e.g., `Raj Kumar`)
+    3. Your **Section** (e.g., `BTech-CS-2B`)
+*   **`REVA: Next Exercise`**: Requests your next exercise. It will prompt you for your **Student ID** and automatically create the `.c` file template in the project root.
+*   **`REVA: Get Help`**: Gathers compiler outputs, style checking results, and your code from the **currently active C file** in your editor, generating the help context block in the terminal panel.
+*   **`REVA: Grade My Code`**: Compiles and runs tests against the **currently active C file**, producing the grading context block in the terminal panel.
+
+> [!IMPORTANT]
+> For **`REVA: Get Help`** and **`REVA: Grade My Code`** to work, you must have the exercise `.c` file open and active in your editor when you launch the task.
 
 ---
 

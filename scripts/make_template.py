@@ -33,31 +33,37 @@ def main() -> None:
     script_dir   = Path(__file__).parent
     project_root = script_dir.parent
 
-    # Search library.json first, then lab_programs.json
+    # Search exercise files
     EXERCISE_FILES = [
-        project_root / "exercises" / "library.json",
+        project_root / "exercises" / "prerequisites.json",
+        project_root / "exercises" / "practice.json",
+        project_root / "exercises" / "advanced.json",
         project_root / "exercises" / "lab_programs.json",
     ]
 
     lib = None
     ex  = None
+    found_topic_key = None
     for lib_path in EXERCISE_FILES:
         if not lib_path.exists():
             continue
         candidate = json.loads(lib_path.read_text(encoding="utf-8"))
-        topic_data = candidate.get("topics", {}).get(topic)
-        if topic_data is None:
-            continue
-        found = next((e for e in topic_data.get("exercises", []) if e["id"] == exercise_id), None)
-        if found:
-            lib = candidate
-            ex  = found
+        for t_key, t_val in candidate.get("topics", {}).items():
+            found = next((e for e in t_val.get("exercises", []) if e["id"] == exercise_id), None)
+            if found:
+                lib = candidate
+                ex  = found
+                found_topic_key = t_key
+                break
+        if ex:
             break
 
     if lib is None or ex is None:
-        sys.exit(f"ERROR: Exercise '{exercise_id}' not found in library.json or lab_programs.json")
+        sys.exit(f"ERROR: Exercise '{exercise_id}' not found in exercise files.")
 
-    topic_name   = lib["topics"][topic]["name"]
+    topic_name   = lib["topics"][found_topic_key]["name"]
+    level_num    = ex.get("level", 1)
+    level_name   = LEVEL_NAMES.get(str(level_num), "Unknown")
     problem      = ex["problem_statement"]
     sample_in    = ex.get("sample_input", "(none)")
     sample_out   = ex.get("sample_output", "(none)")
