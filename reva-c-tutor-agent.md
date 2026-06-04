@@ -113,16 +113,19 @@ reva-c-tutor/
 │   ├── help_agent.md                ← Socratic help specialist
 │   └── grade_agent.md               ← Grading specialist
 ├── exercises/
-│   ├── library.json                 ← Additional practice (prerequisite/syllabus/advanced)
+│   ├── prerequisites.json           ← Prerequisite exercises
+│   ├── practice.json                ← Extra practice exercises (syllabus-aligned)
+│   ├── advanced.json                ← Advanced practice exercises
 │   └── lab_programs.json            ← 10 mandatory lab programs
-├── progress/
-│   └── [student_id].json            ← Per-student progress state
+├── student_data/                    ← Consolidated mutable/student-writable folder (git-ignored)
+│   ├── progress/
+│   │   └── [student_id].json        ← Per-student progress state
+│   └── sessions/
+│       └── [student_id]/
+│           └── [timestamp]_[exercise_id].md
 ├── scripts/                         ← No-LLM data layer
 ├── rubrics/
 │   └── rubric_master.md
-├── sessions/
-│   └── [student_id]/
-│       └── [timestamp]_[exercise_id].md
 ├── config/
 │   └── agent_config.json
 └── docs/
@@ -152,7 +155,7 @@ reva-c-tutor/
 
 ### 4.2 ACP Syllabus Topic Taxonomy
 
-Topics in `library.json` are classified by `category` and `acp_unit`. The `syllabus_unit` field controls assignment ordering.
+Topics in the exercise files (`prerequisites.json`, `practice.json`, `advanced.json`) are classified by `category` and `acp_unit`. The `syllabus_unit` field controls assignment ordering.
 
 #### Prerequisite Topics (assumed from prior course — available on demand)
 
@@ -193,12 +196,14 @@ Topics in `library.json` are classified by `category` and `acp_unit`. The `sylla
 | `ENUM` | Enumerations | 92 |
 | `FSEEK` | Random file access (fseek, ftell) | 93 |
 
-### 4.3 Lab Programs vs. Library
+### 4.3 Lab Programs vs. Additional Practice
 
 | File | Purpose | Who uses it |
 |---|---|---|
 | `exercises/lab_programs.json` | 10 mandatory programs everyone must complete (Programs 1–10) | All students |
-| `exercises/library.json` | Additional practice exercises: prerequisites, syllabus extras, advanced | Optional / by assignment |
+| `exercises/prerequisites.json` | Prerequisite exercises to review prior topics | Optional / on demand |
+| `exercises/practice.json` | Additional practice exercises aligned with the syllabus | Optional / assigned automatically |
+| `exercises/advanced.json` | Advanced topics for fast finishers | Optional / assigned automatically |
 
 ### 4.4 CO → Topic Mapping (for grade agent)
 
@@ -249,7 +254,7 @@ When the agent reads a `.c` file, it **must** parse the filename using `parse_ex
 
 ### 6.1 Top-Level Structure
 
-Both `library.json` and `lab_programs.json` share the same schema. The `file_type` field distinguishes them (`"library"` vs `"lab_programs"`).
+The exercise files (`prerequisites.json`, `practice.json`, `advanced.json`, and `lab_programs.json`) share the same schema. The `file_type` field distinguishes them (`"library"` or `"lab_programs"`).
 
 | Top-level field | Type | Description |
 |---|---|---|
@@ -311,7 +316,7 @@ Both `library.json` and `lab_programs.json` share the same schema. The `file_typ
 
 ## 7. Student Progress Model
 
-### 7.1 Schema: `progress/[student_id].json`
+### 7.1 Schema: `student_data/progress/[student_id].json`
 
 | Field | Type | Description |
 |---|---|---|
@@ -747,7 +752,7 @@ All scripts are in `scripts/` and contain no LLM calls. They are the data layer 
 |---|---|
 | **Purpose** | Determine the next exercise for a student and create the `.c` template file |
 | **Input** | Single argument: student ID |
-| **Reads** | `progress/<student_id>.json`, `exercises/library.json` |
+| **Reads** | `student_data/progress/<student_id>.json`, `exercises/prerequisites.json`, `exercises/practice.json`, `exercises/advanced.json` |
 | **Writes** | Creates `<TOPIC>_L<LEVEL>_<VARIANT>_<student_id>.c` in the current directory |
 | **Output (stdout)** | `Created: <filename>`, `Exercise: <exercise_id>`, `Run: code <filename>` |
 | **Selection logic** | Lowest `syllabus_unit` topic with `assigned_level != null` and `demonstrated_level < 3`; then lowest unused variant at `assigned_level` |
@@ -763,7 +768,7 @@ All scripts are in `scripts/` and contain no LLM calls. They are the data layer 
 |---|---|
 | **Purpose** | Build the `REVA-TUTOR-CONTEXT` block for the help agent |
 | **Input** | Single argument: path to `.c` file |
-| **Reads** | `exercises/library.json` (problem statement), `progress/<student_id>.json` (assigned level) |
+| **Reads** | Exercise files, `student_data/progress/<student_id>.json` (assigned level) |
 | **Help counter** | Tracked in `/tmp/reva_help_<student_id>_<exercise_id>` (per-exercise, persists within a session) |
 | **Output** | Structured context block between `---REVA-TUTOR-CONTEXT---` and `---END-REVA-TUTOR-CONTEXT---` delimiters, containing: student_id, exercise_id, assigned_level, help_request_n, compile output, style output, student code, problem statement |
 | **Exit code** | 1 if no progress file found or filename parse fails |
@@ -777,7 +782,7 @@ All scripts are in `scripts/` and contain no LLM calls. They are the data layer 
 |---|---|
 | **Purpose** | Build the `REVA-TUTOR-GRADE-CONTEXT` block with test results for the grade agent |
 | **Input** | Single argument: path to `.c` file |
-| **Reads** | `exercises/library.json` (test_cases array), `/tmp/reva_tutor_bin` (compiled binary from compile_check.sh) |
+| **Reads** | Exercise files (test_cases array), `/tmp/reva_tutor_bin` (compiled binary from compile_check.sh) |
 | **Test execution** | Iterates over all `test_cases` in the exercise JSON; pipes `input` via stdin to the compiled binary with `timeout 5` to prevent hanging |
 | **Test result format** | `PASS: <label>` or `FAIL: <label>` with `Expected:` and `Got:` lines |
 | **Output** | Structured block between `---REVA-TUTOR-GRADE-CONTEXT---` and `---END-REVA-TUTOR-GRADE-CONTEXT---` delimiters, containing: student_id, exercise_id, compile output, style output, test_results, student_code |
@@ -792,11 +797,11 @@ All scripts are in `scripts/` and contain no LLM calls. They are the data layer 
 |---|---|
 | **Purpose** | Register a new ACP student and create their progress JSON |
 | **Input** | Three arguments: `student_id`, `name`, `section` |
-| **Writes** | `progress/<student_id>.json` |
+| **Writes** | `student_data/progress/<student_id>.json` |
 | **Initial state** | `FUNC` (ACP Unit 1): `assigned_level: 1`; all other topics: `assigned_level: null` |
 | **Error** | Aborts if progress file already exists |
 | **Output** | Confirmation message with student name and section |
-| **Dependencies** | `bash`, `date`, `mkdir` |
+| **Dependencies** | `date`, `mkdir` |
 
 ---
 
@@ -806,7 +811,7 @@ All scripts are in `scripts/` and contain no LLM calls. They are the data layer 
 |---|---|
 | **Purpose** | Generate a populated `.c` template file for a given exercise |
 | **Input** | Three arguments: `filename`, `exercise_id`, `student_id` |
-| **Reads** | `exercises/library.json` (problem statement, constraints, sample I/O, CO mapping) and `exercises/lab_programs.json` (for lab program exercises) |
+| **Reads** | `exercises/prerequisites.json`, `exercises/practice.json`, `exercises/advanced.json` (problem statement, constraints, sample I/O, CO mapping) and `exercises/lab_programs.json` (for lab program exercises) |
 | **Writes** | The `.c` file specified by `filename` |
 | **Template content** | Comment header with exercise metadata + problem statement + empty `main()` with `#include <stdio.h>` |
 | **Called by** | `next.sh` |
@@ -841,12 +846,19 @@ reva-c-tutor/
 │   └── grade_agent.md               ← Grading specialist
 │
 ├── exercises/
-│   ├── library.json                 ← Additional practice exercises
+│   ├── prerequisites.json           ← Prerequisite exercises
+│   ├── practice.json                ← Extra practice exercises (syllabus-aligned)
+│   ├── advanced.json                ← Advanced practice exercises
 │   └── lab_programs.json            ← 10 mandatory lab programs
 │
-├── progress/
-│   ├── .gitkeep
-│   └── [student_id].json            ← One file per student (git-ignored)
+├── student_data/                    ← Consolidated folder for student runtime data (mutable, git-ignored)
+│   ├── progress/
+│   │   ├── .gitkeep
+│   │   └── [student_id].json        ← One file per student
+│   └── sessions/
+│       ├── .gitkeep
+│       └── [student_id]/
+│           └── [ISO8601-timestamp]_[exercise_id].md
 │
 ├── rubrics/
 │   └── rubric_master.md             ← Full rubric (mirrors §11)
@@ -860,11 +872,6 @@ reva-c-tutor/
 │   ├── help.sh
 │   ├── grade.sh
 │   └── init_student.sh
-│
-├── sessions/
-│   ├── .gitkeep
-│   └── [student_id]/
-│       └── [ISO8601-timestamp]_[exercise_id].md
 │
 ├── config/
 │   └── agent_config.json

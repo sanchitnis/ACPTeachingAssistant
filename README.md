@@ -34,10 +34,14 @@ reva-c-tutor/
 │   └── make_template.py
 │
 ├── exercises/
-│   └── library.json            ← 30+ exercises across all 20 topics
+│   ├── prerequisites.json       ← Prerequisite exercises
+│   ├── practice.json            ← Extra practice exercises (syllabus-aligned)
+│   ├── advanced.json            ← Advanced practice exercises
+│   └── lab_programs.json        ← 10 mandatory lab programs
 │
-├── progress/                   ← Per-student progress JSON (git-ignored)
-├── sessions/                   ← Session logs per student (git-ignored)
+├── student_data/                ← Consolidated folder for student runtime data (git-ignored)
+│   ├── progress/                ← Per-student progress JSON
+│   └── sessions/                ← Session logs per student
 │
 ├── config/
 │   └── agent_config.json
@@ -117,9 +121,9 @@ Topics unlock progressively: a unit must be mastered (demonstrated_level=3 for a
 
 ## For Faculty
 
-- Student progress is in `progress/<student_id>.json`
-- Session logs (Socratic dialogue history) are in `sessions/<student_id>/`
-- Add exercises to `exercises/library.json` following the schema in §5 of the spec
+- Student progress is in `student_data/progress/<student_id>.json`
+- Session logs (Socratic dialogue history) are in `student_data/sessions/<student_id>/`
+- Add exercises to `exercises/practice.json` (or `prerequisites.json` / `advanced.json`) following the schema in §6 of the spec
 - The grading rubric is in `rubrics/rubric_master.md`
 - Full pedagogical rationale is in `reva-c-tutor-agent.md`
 

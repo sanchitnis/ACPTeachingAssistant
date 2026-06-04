@@ -28,7 +28,7 @@ chmod +x scripts/*.sh
 ./scripts/init_student.sh raj22cs045 "Raj Kumar" "BTech-CS-2B"
 ```
 
-This creates `progress/raj22cs045.json` which tracks your progress through all topics.
+This creates `student_data/progress/raj22cs045.json` which tracks your progress through all topics.
 
 ---
 
