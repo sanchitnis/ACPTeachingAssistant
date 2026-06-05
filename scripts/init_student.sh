@@ -22,6 +22,35 @@ if [ -z "$STUDENT_ID" ] || [ -z "$NAME" ] || [ -z "$SECTION" ]; then
     exit 1
 fi
 
+GRADE=""
+if [ -t 0 ]; then
+    while [ -z "$GRADE" ]; do
+        echo -n "Enter your 1st sem C Programming grade (A/B/C/D/F): "
+        read -r GRADE
+        GRADE=$(echo "$GRADE" | tr '[:lower:]' '[:upper:]' | xargs)
+        if [[ ! "$GRADE" =~ ^[A-DF]$ ]]; then
+            echo "Invalid grade. Please enter A, B, C, D, or F."
+            GRADE=""
+        fi
+    done
+else
+    # Default fallback for automated environments
+    GRADE="B"
+fi
+
+UNLOCK_PREREQS="false"
+if [[ "$GRADE" == "C" || "$GRADE" == "D" || "$GRADE" == "F" ]]; then
+    UNLOCK_PREREQS="true"
+    echo "⚠️  Grade indicates catch-up is needed. Unlocking prerequisite topics first!"
+fi
+
+FUNC_ASSIGNED="1"
+PREREQ_ASSIGNED="null"
+if [ "$UNLOCK_PREREQS" = "true" ]; then
+    FUNC_ASSIGNED="null"
+    PREREQ_ASSIGNED="1"
+fi
+
 STUDENT_DATA="$PROJECT_ROOT/student_data"
 PROGRESS_DIR="$STUDENT_DATA/progress"
 SESSIONS_DIR="$STUDENT_DATA/sessions/${STUDENT_ID}"
@@ -48,11 +77,12 @@ cat > "$PROGRESS_FILE" << EOF
   "student_id": "$STUDENT_ID",
   "name": "$NAME",
   "section": "$SECTION",
+  "c_grade_sem1": "$GRADE",
   "created": "$NOW",
   "last_active": "$NOW",
   "overall_level": 1,
   "topics": {
-    "FUNC":        { "assigned_level": 1,    "demonstrated_level": 0, "exercises_completed": 0, "last_score": null, "co_mapping": ["CO1"] },
+    "FUNC":        { "assigned_level": $FUNC_ASSIGNED,    "demonstrated_level": 0, "exercises_completed": 0, "last_score": null, "co_mapping": ["CO1"] },
     "SCOPE":       { "assigned_level": null, "demonstrated_level": 0, "exercises_completed": 0, "last_score": null, "co_mapping": ["CO1"] },
     "ARRAY":       { "assigned_level": null, "demonstrated_level": 0, "exercises_completed": 0, "last_score": null, "co_mapping": ["CO1"] },
     "STRUCT":      { "assigned_level": null, "demonstrated_level": 0, "exercises_completed": 0, "last_score": null, "co_mapping": ["CO1","CO2"] },

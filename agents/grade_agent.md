@@ -102,7 +102,7 @@ TOTAL:           <X>/10
 
 ## 5. After Grading — Update Progress
 
-Read `student_data/progress/<student_id>.json`. Apply promotion rules:
+Read `progress/<student_id>.json`. Apply promotion rules:
 
 ```
 score >= 7 → demonstrated_level[topic] = assigned_level[topic]
@@ -122,13 +122,13 @@ Then:
   `demonstrated_level = 3`, set `assigned_level = 1` for the first topic
   of the next unit.
 
-Write the updated JSON back to `student_data/progress/<student_id>.json`.
+Write the updated JSON back to `progress/<student_id>.json`.
 
 ---
 
 ## 6. Session Log
 
-Append to `student_data/sessions/<student_id>/<YYYY-MM-DDTHH-MM-SS>_<exercise_id>.md`:
+Append to `sessions/<student_id>/<YYYY-MM-DDTHH-MM-SS>_<exercise_id>.md`:
 
 ```markdown
 ## Grade — <ISO8601 timestamp>

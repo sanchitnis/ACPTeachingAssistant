@@ -351,13 +351,13 @@ The exercise files (`prerequisites.json`, `practice.json`, `advanced.json`, and 
 
 ### 7.2 Initial State: ACP Course Entry
 
-When `init_student.sh` registers a new ACP student, the progress file is initialised with:
-- **FUNC** (ACP Unit 1, `syllabus_unit: 10`): `assigned_level: 1` — the entry point.
-- All other ACP syllabus topics: `assigned_level: null` (locked).
-- Prerequisite topics: `assigned_level: null` (available only if student requests review).
-- Advanced topics: `assigned_level: null` (available only after all CO1–CO5 demonstrated Level 3).
+When `init_student.sh` registers a new ACP student, it prompts for the student's 1st semester C Programming grade and saves it:
+- **Default (Grade A or B)**: The student starts directly on the ACP syllabus. The progress file is initialised with **FUNC** (ACP Unit 1, `syllabus_unit: 10`): `assigned_level: 1` — all other topics (including prerequisites) are locked (`null`).
+- **Catch-up flow (Grade C, D, or F)**: The prerequisites are unlocked automatically to help the student catch up. The progress file is initialised with all `_prereq_` topics (`_prereq_INTRO` to `_prereq_JUMP`) set to `assigned_level: 1`, while **FUNC** starts locked (`null`).
 
-> **Rationale**: ACP assumes students are familiar with C fundamentals from a prior course. The sequence starts directly at functions and modular programming (CO1).
+Once all prerequisite topics reach `demonstrated_level = 3`, **FUNC** is automatically unlocked (`assigned_level: 1`).
+
+Advanced topics are permanently locked (`null`) until all core CO1–CO5 syllabus topics reach `demonstrated_level = 3`.
 
 ### 7.3 Level Promotion Rules
 
