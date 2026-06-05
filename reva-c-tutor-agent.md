@@ -800,11 +800,11 @@ All scripts are in `scripts/` and contain no LLM calls. They are the data layer 
 | Property | Detail |
 |---|---|
 | **Purpose** | Register a new ACP student and create their progress JSON |
-| **Input** | Three arguments: `student_id`, `name`, `section` |
+| **Input** | Four arguments: `student_id`, `name`, `section`, `grade` |
 | **Writes** | `student_data/progress/<student_id>.json` |
-| **Initial state** | `FUNC` (ACP Unit 1): `assigned_level: 1`; all other topics: `assigned_level: null` |
+| **Initial state** | `FUNC` (ACP Unit 1): `assigned_level: 1` (or `_prereq_INTRO`: `1` if grade is low); all other topics: `assigned_level: null` |
 | **Error** | Aborts if progress file already exists |
-| **Output** | Confirmation message with student name and section |
+| **Output** | Confirmation message with student name, section, and 1st sem grade |
 | **Dependencies** | `date`, `mkdir` |
 
 ---

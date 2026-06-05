@@ -4,6 +4,17 @@
 # Requires: cppcheck, awk, grep
 
 FILE="$1"
+
+if [ -z "$FILE" ]; then
+    echo "Usage: $0 <file.c>"
+    exit 1
+fi
+
+if [ ! -f "$FILE" ]; then
+    echo "ERROR: File '$FILE' not found."
+    exit 1
+fi
+
 VIOLATIONS=()
 
 # ── cppcheck (covers unused vars, uninitialised vars, style issues) ───────────

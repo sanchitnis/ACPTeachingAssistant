@@ -11,9 +11,23 @@ set -euo pipefail
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PROJECT_ROOT="$(dirname "$SCRIPT_DIR")"
 
+# ── Dependency Check ──────────────────────────────────────────────────────────
+for tool in gcc cppcheck jq; do
+    if ! command -v "$tool" &> /dev/null; then
+        echo "ERROR: Tool '$tool' is not installed or not in PATH."
+        echo "       Please refer to the Prerequisites section in README.md"
+        exit 1
+    fi
+done
+
 FILE="${1:-}"
 if [ -z "$FILE" ]; then
     echo "Usage: $0 <file.c>"
+    exit 1
+fi
+
+if [ ! -f "$FILE" ]; then
+    echo "ERROR: File '$FILE' not found."
     exit 1
 fi
 
@@ -28,7 +42,7 @@ PROGRESS_FILE="$PROJECT_ROOT/student_data/progress/${STUDENT_ID}.json"
 if [ ! -f "$PROGRESS_FILE" ]; then
     echo "ERROR: No progress file for '$STUDENT_ID'."
     echo "       Expected: student_data/progress/${STUDENT_ID}.json"
-    echo "Run: ./scripts/init_student.sh $STUDENT_ID \"<Full Name>\" \"<Section>\""
+    echo "Run: ./scripts/init_student.sh $STUDENT_ID \"<Full Name>\" \"<Section>\" \"<1st Sem Grade>\""
     exit 1
 fi
 
@@ -59,7 +73,13 @@ PROBLEM=$(jq -r --arg eid "$EXERCISE_ID" \
   || jq -r --arg eid "$EXERCISE_ID" \
     '.topics[$eid | split("_")[0]].exercises[] | select(.id == $eid) | .problem_statement' \
     "$PROJECT_ROOT/exercises/lab_programs.json" 2>/dev/null \
-  || echo "(problem statement not found)")
+  || echo "NOT_FOUND")
+
+if [ "$PROBLEM" = "NOT_FOUND" ]; then
+    echo "ERROR: Exercise '$EXERCISE_ID' not found in libraries."
+    echo "       Check your filename: TOPIC_Ln_variant_studentid.c"
+    exit 1
+fi
 
 # ── Load assigned_level from progress ─────────────────────────────────────────
 ASSIGNED_LEVEL=$(jq -r --arg t "$TOPIC" \

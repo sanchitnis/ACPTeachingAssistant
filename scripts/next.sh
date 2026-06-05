@@ -10,6 +10,15 @@ set -euo pipefail
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PROJECT_ROOT="$(dirname "$SCRIPT_DIR")"
 
+# ── Dependency Check ──────────────────────────────────────────────────────────
+for tool in jq python3; do
+    if ! command -v "$tool" &> /dev/null; then
+        echo "ERROR: Tool '$tool' is not installed or not in PATH."
+        echo "       Please refer to the Prerequisites section in README.md"
+        exit 1
+    fi
+done
+
 STUDENT_ID="${1:-}"
 if [ -z "$STUDENT_ID" ]; then
     echo "Usage: $0 <student_id>"
@@ -22,7 +31,7 @@ LIBRARY_FILE="$PROJECT_ROOT/exercises/practice.json"
 if [ ! -f "$PROGRESS_FILE" ]; then
     echo "ERROR: No progress file for '$STUDENT_ID'."
     echo "       Expected: student_data/progress/${STUDENT_ID}.json"
-    echo "Run: ./scripts/init_student.sh $STUDENT_ID \"<Full Name>\" \"<Section>\""
+    echo "Run: ./scripts/init_student.sh $STUDENT_ID \"<Full Name>\" \"<Section>\" \"<1st Sem Grade>\""
     exit 1
 fi
 

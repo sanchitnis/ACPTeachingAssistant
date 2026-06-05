@@ -1,127 +1,98 @@
 # REVA C Tutor
 
-**AI-powered Socratic teaching assistant for C programming — REVA University, School of CSE**
+**AI-powered Socratic teaching assistant for C programming � REVA University, School of CSE**
 
 ---
 
-## What This Is
+## Overview
 
-A VS Code–integrated system that assigns C programming exercises, guides students through debugging via Socratic questioning, and grades submissions against a 10-point rubric — **without ever giving them the answer**.
+REVA C Tutor is a VS Code�integrated system designed to help you master C programming. It assigns exercises, guides you through debugging via **Socratic questioning**, and grades your submissions based on a professional 10-point rubric.
 
-The agent asks questions that make students find bugs themselves. This builds the mental execution model that separates programmers from typists.
-
----
-
-## Directory Structure
-
-```
-reva-c-tutor/
-├── SKILL.md                    ← Master agent router (read this first)
-├── reva-c-tutor-agent.md       ← Full specification and pedagogy
-│
-├── agents/
-│   ├── help_agent.md           ← Socratic help specialist
-│   └── grade_agent.md          ← Grading specialist
-│
-├── scripts/                    ← Data layer (no LLM calls)
-│   ├── init_student.sh         ← Register a new student
-│   ├── next.sh                 ← Assign next exercise
-│   ├── help.sh                 ← Generate help context block
-│   ├── grade.sh                ← Generate grade context block
-│   ├── parse_exercise_filename.sh
-│   ├── compile_check.sh
-│   ├── check_style.sh
-│   └── make_template.py
-│
-├── exercises/
-│   ├── prerequisites.json       ← Prerequisite exercises
-│   ├── practice.json            ← Extra practice exercises (syllabus-aligned)
-│   ├── advanced.json            ← Advanced practice exercises
-│   └── lab_programs.json        ← 10 mandatory lab programs
-│
-├── student_data/                ← Consolidated folder for student runtime data (git-ignored)
-│   ├── progress/                ← Per-student progress JSON
-│   └── sessions/                ← Session logs per student
-│
-├── config/
-│   └── agent_config.json
-├── rubrics/
-│   └── rubric_master.md
-├── docs/
-│   ├── how_to_use.md           ← Student quick-start
-│   └── coding_style_guide.md   ← S01–S10 rules with examples
-└── .vscode/
-    └── tasks.json              ← VS Code task runner shortcuts
-```
+The tutor's goal is to build your mental execution model. It will **never** give you the answer or write code for you�instead, it helps you find the bugs yourself.
 
 ---
 
-## Quick Start (Students)
+## Prerequisites
 
-See **`docs/how_to_use.md`** for the full guide. The recommended workflow is:
+Before starting, ensure you have the following tools installed and available in your system path:
 
-1. **Register Yourself** (once): Run VS Code task **`REVA: Register Student`** and follow the prompts.
-2. **Get Exercise**: Run VS Code task **`REVA: Next Exercise`** and input your Student ID. This creates your exercise file under `student_data/` (e.g. `student_data/INTRO_L1_a_raj22cs045.c`).
-3. **Get Help**: Open your active exercise `.c` file and run VS Code task **`REVA: Get Help`**. In your agent chat, attach the file `student_data/help_context.txt` (type `@help_context.txt` or click `+`) and ask for support.
-4. **Submit for Grading**: Run VS Code task **`REVA: Grade My Code`** with the exercise file open. Attach the generated file `student_data/grade_context.txt` in your chat and ask the agent to grade your code.
+### Windows Users (Crucial)
+1.  **Git for Windows**: [Download here](https://git-scm.com/download/win). During installation, ensure "**Add Git to PATH**" is selected. This provides the `bash` environment required by the scripts.
+2.  **Verify Bash**: Open PowerShell and type `bash --version`. If it fails, you must install Git for Windows.
 
----
+### Required Tools (All Platforms)
 
-## Agent Architecture
-
-```
-Student attaches context file
-          │
-          ▼
-    SKILL.md (router)
-     /           \
-    HELP          GRADE
-     │              │
-help_agent.md  grade_agent.md
-(Socratic       (10-point
- protocol)       rubric)
-```
-
-**Token efficiency design**: The master `SKILL.md` is ~250 tokens. Only the relevant specialist agent is loaded per invocation (~500 tokens). The full 1300-line spec is never loaded during normal operation.
-
----
-
-## Syllabus Coverage (8 Units, 20 Topics)
-
-| Unit | Topics |
-|---|---|
-| 1 — Basics | INTRO, DTYPES, OPS, IO |
-| 2 — Control Flow | COND, LOOP, JUMP |
-| 3 — Functions | FUNC, SCOPE, RECUR |
-| 4 — Arrays & Strings | ARRAY, STRING |
-| 5 — Pointers | PTR, PTRARR, PTRF |
-| 6 — Structures | STRUCT, UNION, ENUM |
-| 7 — File I/O | FILE |
-| 8 — Dynamic Memory | DYNMEM |
-
-Topics unlock progressively: a unit must be mastered (demonstrated_level=3 for all topics) before the next unit's topics become available.
-
----
-
-## For Faculty
-
-- Student progress is in `student_data/progress/<student_id>.json`
-- Session logs (Socratic dialogue history) are in `student_data/sessions/<student_id>/`
-- Add exercises to `exercises/practice.json` (or `prerequisites.json` / `advanced.json`) following the schema in §6 of the spec
-- The grading rubric is in `rubrics/rubric_master.md`
-- Full pedagogical rationale is in `reva-c-tutor-agent.md`
-
----
-
-## Dependencies
-
-| Tool | Version | Purpose |
+| Tool | Install command (Ubuntu/WSL) | Windows Recommendation |
 |---|---|---|
-| gcc | ≥ 9.0 | Compile student code |
-| cppcheck | ≥ 2.0 | Style checking (S01, S04, S05, S07, S09) |
-| jq | ≥ 1.6 | JSON parsing in bash scripts |
-| python3 | ≥ 3.8 | Exercise template generation |
-| bash | ≥ 4.0 | All shell scripts |
+| GCC | `sudo apt install gcc` | [MinGW-w64](https://www.mingw-w64.org/) or [Choco](https://chocolatey.org/) |
+| cppcheck | `sudo apt install cppcheck` | `choco install cppcheck` |
+| jq | `sudo apt install jq` | `choco install jq` or [Download Binary](https://jqlang.github.io/jq/download/) |
+| Python 3 | `sudo apt install python3` | [Python.org](https://www.python.org/downloads/windows/) |
+
+After installing, make the scripts executable by running this in your terminal once:
+```bash
+chmod +x scripts/*.sh
+```
+
+---
+
+## Getting Started
+
+The recommended workflow uses VS Code Tasks. To run any task, press `Ctrl+Shift+P` (Windows/Linux) or `Cmd+Shift+P` (macOS), type **Tasks: Run Task**, and select the task.
+
+### 1. Register Yourself (Once)
+Run the task **`REVA: Register Student`**. Follow the prompts to enter your Student ID, Full Name, Section, and your 1st semester C Programming grade. This creates your progress file and determines if you need catch-up exercises.
+
+### 2. Get Your First Exercise
+Run the task **`REVA: Next Exercise`**. This creates a `.c` file in the `student_data/` folder (e.g., `student_data/INTRO_L1_a_raj22cs045.c`). Open this file to see your assignment.
+
+### 3. Write and Test Your Code
+Implement your solution in the created `.c` file. Follow the [Coding Style Guide](docs/coding_style_guide.md) strictly, as it affects your grade.
+
+### 4. Get Help (When Stuck)
+If you encounter compiler errors or logical bugs:
+1. Keep your exercise `.c` file open.
+2. Run the task **`REVA: Get Help`**.
+3. Attach the generated `student_data/help_context.txt` to your agent chat (`@help_context.txt`) and ask for guidance.
+
+### 5. Submit for Grading
+When you think your solution is ready:
+1. Run the task **`REVA: Grade My Code`**.
+2. Attach the generated `student_data/grade_context.txt` to your chat and ask the agent to grade your code.
+3. If you score **7/10 or higher**, you can move to the next exercise.
+
+---
+
+## The Tutor's Principles
+
+The agent is your guide, not your ghostwriter.
+
+**The agent will NEVER:**
+- Write code for you.
+- Tell you exactly which line is wrong.
+- Give you the corrected version of your code.
+
+**The agent WILL:**
+- Ask questions that lead you to the answer.
+- Provide analogies and partial code traces.
+- Give targeted feedback on your grade and style violations.
+
+---
+
+## Troubleshooting
+
+- **File Naming**: Exercises must follow `TOPIC_Ln_variant_studentid.c`. If you rename them manually, scripts may fail.
+- **Active File**: Always keep the exercise `.c` file active in your editor when running **Get Help** or **Grade My Code**.
+- **Tool Errors**: If `help.sh` fails, ensure `gcc`, `cppcheck`, and `jq` are correctly installed.
+
+---
+
+## Professional Standards
+Code quality is as important as correctness. Refer to the [Coding Style Guide](docs/coding_style_guide.md) for rules on indentation, naming conventions, and documentation.
+
+---
+
+For technical details, architecture, and contribution guidelines, see [CONTRIBUTING.md](CONTRIBUTING.md).
 
 ---
 

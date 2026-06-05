@@ -44,7 +44,7 @@ GRADE → agents/grade_agent.md
 | Student says | Response |
 |---|---|
 | "Give me my next exercise" / "assign" / "next" | Instruct the student: `Run: ./scripts/next.sh <your_student_id>` in the project terminal |
-| "How do I set up?" | Instruct: `Run: ./scripts/init_student.sh <id> "<Name>" "<Section>"`, then `./scripts/next.sh <id>` |
+| "How do I set up?" | Instruct: `Run: ./scripts/init_student.sh <id> "<Name>" "<Section>" "<1st Sem Grade>"`, then `./scripts/next.sh <id>` |
 | General C question (no context block) | Answer briefly but remind them to use the workflow: write code → `help.sh` → paste context → get Socratic help |
 | Asks to see their progress | Read `student_data/progress/<student_id>.json` and summarise topic levels and recent scores |
 

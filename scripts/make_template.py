@@ -23,11 +23,16 @@ LEVEL_NAMES = {
 
 def main() -> None:
     if len(sys.argv) != 4:
-        sys.exit("Usage: make_template.py <output_filepath> <exercise_id> <student_id>")
+        print("Usage: make_template.py <output_filepath> <exercise_id> <student_id>", file=sys.stderr)
+        sys.exit(1)
 
     output_path  = Path(sys.argv[1])
     exercise_id  = sys.argv[2]
     student_id   = sys.argv[3]
+
+    if not exercise_id or "_" not in exercise_id:
+        print(f"ERROR: Invalid exercise_id '{exercise_id}'", file=sys.stderr)
+        sys.exit(1)
 
     # Derive paths relative to this script's location
     script_dir   = Path(__file__).parent

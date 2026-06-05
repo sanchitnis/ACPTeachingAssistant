@@ -4,6 +4,17 @@
 # Requires: gcc
 
 FILE="$1"
+
+if [ -z "$FILE" ]; then
+    echo "Usage: $0 <file.c>"
+    exit 1
+fi
+
+if [ ! -f "$FILE" ]; then
+    echo "ERROR: File '$FILE' not found."
+    exit 1
+fi
+
 BIN="/tmp/reva_tutor_bin_$$"
 
 OUTPUT=$(gcc -Wall -Wextra -Wpedantic -std=c99 -o "$BIN" "$FILE" 2>&1)

@@ -1,8 +1,8 @@
 #!/bin/bash
-# Usage: init_student.sh <student_id> <name> <section>
+# Usage: init_student.sh <student_id> <name> <section> <grade>
 # Creates student_data/progress/<student_id>.json with all ACP topics locked
 # (assigned_level: null) except FUNC (ACP Unit 1 entry point), which starts
-# at assigned_level = 1.
+# at assigned_level = 1 (unless grade is low, which triggers prerequisites).
 # Topics are unlocked by next.sh when a full syllabus unit is mastered.
 #
 # Requires: bash, date, mkdir
@@ -12,30 +12,49 @@ set -euo pipefail
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PROJECT_ROOT="$(dirname "$SCRIPT_DIR")"
 
+# ── Dependency Check ──────────────────────────────────────────────────────────
+for tool in jq python3 gcc cppcheck; do
+    if ! command -v "$tool" &> /dev/null; then
+        echo "WARNING: Tool '$tool' is not installed. You will need it for later steps."
+        echo "         Please refer to the Prerequisites section in README.md"
+    fi
+done
+
 STUDENT_ID="${1:-}"
 NAME="${2:-}"
 SECTION="${3:-}"
+GRADE_ARG="${4:-}"
 
 if [ -z "$STUDENT_ID" ] || [ -z "$NAME" ] || [ -z "$SECTION" ]; then
-    echo "Usage: $0 <student_id> \"<Full Name>\" \"<Section>\""
-    echo "Example: $0 raj22cs045 \"Raj Kumar\" \"BTech-CS-2B\""
+    echo "Usage: $0 <student_id> \"<Full Name>\" \"<Section>\" [<1st sem grade>]"
+    echo "Example: $0 raj22cs045 \"Raj Kumar\" \"BTech-CS-2B\" \"A+\""
     exit 1
 fi
 
 GRADE=""
-if [ -t 0 ]; then
-    while [ -z "$GRADE" ]; do
-        echo -n "Enter your 1st sem C Programming grade (O/A+/A/B+/B/C+/C/F): "
-        read -r GRADE
-        GRADE=$(echo "$GRADE" | tr '[:lower:]' '[:upper:]' | xargs)
-        if [[ ! "$GRADE" =~ ^(O|A\+|A|B\+|B|C\+|C|F)$ ]]; then
-            echo "Invalid grade. Please enter O, A+, A, B+, B, C+, C, or F."
-            GRADE=""
-        fi
-    done
-else
-    # Default fallback for automated environments
-    GRADE="B"
+if [ -n "$GRADE_ARG" ]; then
+    GRADE=$(echo "$GRADE_ARG" | tr '[:lower:]' '[:upper:]' | xargs)
+    if [[ ! "$GRADE" =~ ^(O|A\+|A|B\+|B|C\+|C|F)$ ]]; then
+        echo "Warning: Invalid grade '$GRADE_ARG' provided. Reverting to interactive prompt."
+        GRADE=""
+    fi
+fi
+
+if [ -z "$GRADE" ]; then
+    if [ -t 0 ]; then
+        while [ -z "$GRADE" ]; do
+            echo -n "Enter your 1st sem C Programming grade (O/A+/A/B+/B/C+/C/F): "
+            read -r GRADE
+            GRADE=$(echo "$GRADE" | tr '[:lower:]' '[:upper:]' | xargs)
+            if [[ ! "$GRADE" =~ ^(O|A\+|A|B\+|B|C\+|C|F)$ ]]; then
+                echo "Invalid grade. Please enter O, A+, A, B+, B, C+, C, or F."
+                GRADE=""
+            fi
+        done
+    else
+        # Default fallback for automated environments
+        GRADE="B"
+    fi
 fi
 
 UNLOCK_PREREQS="false"
@@ -111,7 +130,7 @@ cat > "$PROGRESS_FILE" << EOF
 }
 EOF
 
-echo "✅ Student registered: $STUDENT_ID ($NAME) — $SECTION"
+echo "✅ Student registered: $STUDENT_ID ($NAME) — $SECTION (Sem 1 Grade: $GRADE)"
 echo "   Progress file: $PROGRESS_FILE"
 echo "   Sessions dir:  $SESSIONS_DIR"
 echo ""

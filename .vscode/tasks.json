@@ -6,6 +6,12 @@
       "type": "shell",
       "command": "bash",
       "args": ["scripts/help.sh", "${file}"],
+      "options": {
+        "env": {
+          "CHERE_INVOKING": "1",
+          "MSYSTEM": "MINGW64"
+        }
+      },
       "group": "test",
       "presentation": {
         "reveal": "always",
@@ -19,6 +25,12 @@
       "type": "shell",
       "command": "bash",
       "args": ["scripts/grade.sh", "${file}"],
+      "options": {
+        "env": {
+          "CHERE_INVOKING": "1",
+          "MSYSTEM": "MINGW64"
+        }
+      },
       "group": "test",
       "presentation": {
         "reveal": "always",
@@ -32,6 +44,12 @@
       "type": "shell",
       "command": "bash",
       "args": ["scripts/next.sh", "${input:studentId}"],
+      "options": {
+        "env": {
+          "CHERE_INVOKING": "1",
+          "MSYSTEM": "MINGW64"
+        }
+      },
       "group": "test",
       "presentation": {
         "reveal": "always",
@@ -48,8 +66,15 @@
         "scripts/init_student.sh",
         "${input:studentId}",
         "${input:studentName}",
-        "${input:studentSection}"
+        "${input:studentSection}",
+        "${input:studentGrade}"
       ],
+      "options": {
+        "env": {
+          "CHERE_INVOKING": "1",
+          "MSYSTEM": "MINGW64"
+        }
+      },
       "group": "test",
       "presentation": {
         "reveal": "always",
@@ -73,6 +98,11 @@
     {
       "id": "studentSection",
       "description": "Your section (e.g. BTech-CS-2B)",
+      "type": "promptString"
+    },
+    {
+      "id": "studentGrade",
+      "description": "Your 1st sem C Programming grade (O/A+/A/B+/B/C+/C/F)",
       "type": "promptString"
     }
   ]

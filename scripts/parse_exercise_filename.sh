@@ -2,6 +2,16 @@
 # Usage: parse_exercise_filename.sh <filename.c>
 # Outputs: KEY=value pairs (eval-able) or exits 1 with an error message.
 
+if [ -z "$1" ]; then
+    echo "Usage: $0 <filename.c>"
+    exit 1
+fi
+
+if [[ "$1" != *.c ]]; then
+    echo "ERROR: File '$1' is not a .c file. Please ensure you have an active C file open."
+    exit 1
+fi
+
 FILE=$(basename "$1" .c)
 IFS='_' read -r TOPIC LEVEL_STR VARIANT STUDENT_ID <<< "$FILE"
 
