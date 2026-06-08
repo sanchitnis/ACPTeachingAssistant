@@ -2,9 +2,7 @@
 name: reva-c-tutor
 description: >
   REVA University C Programming Teaching Assistant.
-  Routes student requests (help / grade / next exercise) to the correct
-  specialist agent. Invoke whenever a student pastes a REVA-TUTOR-CONTEXT
-  or REVA-TUTOR-GRADE-CONTEXT block, or asks to be assigned their next exercise.
+  Guides students through setup, exercise assignment, Socratic debugging, and grading.
 ---
 
 # REVA C Tutor — Master Router
@@ -12,6 +10,27 @@ description: >
 > **Token-efficiency rule**: Read ONE agent file per invocation — the one
 > that matches the request type. Never load both. Full pedagogical background
 > is in `reva-c-tutor-agent.md`; read it only if explicitly asked for context.
+
+---
+
+## Phase 0 — Initialization & Environment Check
+
+Before fulfilling any request, ensure the student's environment is ready and their status is known:
+
+1.  **Check Dependencies**:
+    - Use `run_in_terminal` to check `bash --version` and `python --version` (or `python`).
+    - If `bash` is missing: Inform the student that **Git for Windows** is required for the scripts to run.
+    - If `python` is missing: Guide them to install Python 3 and ensure "Add to PATH" is checked.
+
+2.  **Verify Registration**:
+    - List `student_data/progress/` to see if the student has a profile.
+    - If the student is not registered: Guide them to run `REVA: Register Student` task.
+    - If registered: Read their `student_data/progress/<id>.json` to determine their `assigned_level` and `demonstrated_level`.
+
+3.  **Identify State of Work**:
+    - Check `student_data/` for any `.c` files matching the `student_id`.
+    - If an exercise is active: Prompt the student to continue working on it or run `REVA: Get Help`.
+    - If no exercise is active: Prompt them to run `REVA: Next Exercise`.
 
 ---
 

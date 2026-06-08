@@ -29,7 +29,22 @@ Before starting, ensure you have the following tools installed and available in 
 | jq | `sudo apt install jq` | `choco install jq` or [Download Binary](https://jqlang.github.io/jq/download/) |
 | Python 3 | `sudo apt install python3` | [Python.org](https://www.python.org/downloads/windows/) |
 
-After installing, make the scripts executable by running this in your terminal once:
+## Installation
+
+> **Legal Notice**
+>
+> - **Copyright**: Copyright (c) 2026 REVA University. All Rights Reserved.
+> - **Authorized Access**: Use is restricted to authorized REVA University students and employees only.
+> - **Confidentiality**: All materials in this repository are proprietary. External sharing without official written approval from REVA University is strictly prohibited.
+> - **Attribution**: You must retain the original copyright notice and creator attribution in all copies or substantial portions of the software.
+> - **Agreement Clause**: Installing, deploying, or using any assets, plugins, or components from this repository constitutes your agreement to the terms in the [LICENSE](LICENSE) file.
+
+To install ACPTeachingAssistant on your computer, follow these simple steps:
+
+1. **Download**: Download the latest release source code ZIP from the [latest Release](https://github.com/sanchitnis/ACPTeachingAssistant/releases/latest).
+2. **Extract**: Unzip the downloaded `.zip` file to any folder on your computer.
+3. Open vscode and open the root folder of this repo. 
+4. After installing, make the scripts executable by running this in your terminal once:
 ```bash
 chmod +x scripts/*.sh
 ```
@@ -38,7 +53,7 @@ chmod +x scripts/*.sh
 
 ## Getting Started
 
-The recommended workflow uses VS Code Tasks. To run any task, press `Ctrl+Shift+P` (Windows/Linux) or `Cmd+Shift+P` (macOS), type **Tasks: Run Task**, and select the task.
+The recommended workflow uses VS Code Tasks. To run any task, press `Ctrl+Shift+P` (Windows/Linux) or `Cmd+Shift+P` (macOS), type **Tasks: Run Task**, and select the task. You can also set a keyboard shortcut of your choice for **Tasks: Run Task**.
 
 ### 1. Register Yourself (Once)
 Run the task **`REVA: Register Student`**. Follow the prompts to enter your Student ID, Full Name, Section, and your 1st semester C Programming grade. This creates your progress file and determines if you need catch-up exercises.

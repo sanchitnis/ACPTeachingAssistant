@@ -25,6 +25,13 @@ if [ -z "$FILE" ]; then
     exit 1
 fi
 
+# Check file extension
+if [[ "$FILE" != *.c ]]; then
+    echo "ERROR: The active file is not a C programming file (.c)."
+    echo "       Please open your active exercise file (e.g., student_data/FUNC_L1_a_raj22cs045.c) in the editor and run this task again."
+    exit 1
+fi
+
 if [ ! -f "$FILE" ]; then
     echo "ERROR: File '$FILE' not found."
     exit 1
