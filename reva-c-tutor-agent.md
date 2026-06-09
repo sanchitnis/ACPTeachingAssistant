@@ -246,7 +246,7 @@ Every exercise file the student works on **must** follow this convention:
 
 ### 5.3 Agent Behaviour on Filename Parse
 
-When the agent reads a `.c` file, it **must** parse the filename using `parse_exercise_filename.sh` to determine: topic, level, variant, and student ID. If the filename does not follow the convention, the agent pauses and asks the student to rename the file before proceeding.
+When the agent reads a `.c` file, it **must** parse the filename using `parse_exercise_filename.py` to determine: topic, level, variant, and student ID. If the filename does not follow the convention, the agent pauses and asks the student to rename the file before proceeding.
 
 ---
 
@@ -272,7 +272,7 @@ The exercise files (`prerequisites.json`, `practice.json`, `advanced.json`, and 
 | `name` | string | Human-readable topic name |
 | `category` | string | `"prerequisite"`, `"syllabus"`, `"advanced"`, or `"lab_program"` |
 | `acp_unit` | int or null | ACP unit number (1–5); null for prerequisites and advanced |
-| `syllabus_unit` | int | Ordering key used by `next.sh` for assignment sequencing |
+| `syllabus_unit` | int | Ordering key used by `next.py` for assignment sequencing |
 | `co_mapping` | array | e.g. `["CO1", "CO3"]`; empty for prerequisites/advanced |
 | `description` | string | Brief scope description |
 | `exercises` | array | Ordered list of exercise objects |
@@ -351,7 +351,7 @@ The exercise files (`prerequisites.json`, `practice.json`, `advanced.json`, and 
 
 ### 7.2 Initial State: ACP Course Entry
 
-When `init_student.sh` registers a new ACP student, it prompts for the student's 1st semester C Programming grade and saves it:
+When `init_student.py` registers a new ACP student, it prompts for the student's 1st semester C Programming grade and saves it:
 - **Default (Grade O, A+, A, B+, or B)**: The student starts directly on the ACP syllabus. The progress file is initialised with **FUNC** (ACP Unit 1, `syllabus_unit: 10`): `assigned_level: 1` — all other topics (including prerequisites) are locked (`null`).
 - **Catch-up flow (Grade C+, C, or F)**: The prerequisites are unlocked automatically to help the student catch up. The progress file is initialised with all `_prereq_` topics (`_prereq_INTRO` to `_prereq_JUMP`) set to `assigned_level: 1`, while **FUNC** starts locked (`null`).
 
@@ -381,7 +381,7 @@ After a grading update:
 
 ### 7.5 Next-Exercise Assignment Logic
 
-The `next.sh` script implements this decision tree:
+The `next.py` script implements this decision tree:
 
 1. Find the lowest `syllabus_unit` topic where `assigned_level` is not null AND `demonstrated_level < 3`.
 2. Within that topic, select an exercise at `assigned_level` that has not yet been attempted (check `sessions` history).
@@ -399,8 +399,8 @@ The agent is invoked when the student pastes a context block (produced by a scri
 
 | Block Type | Produced By | Trigger |
 |---|---|---|
-| `---REVA-TUTOR-CONTEXT---` | `help.sh` | Student requests help |
-| `---REVA-TUTOR-GRADE-CONTEXT---` | `grade.sh` | Student requests grading |
+| `---REVA-TUTOR-CONTEXT---` | `help.py` | Student requests help |
+| `---REVA-TUTOR-GRADE-CONTEXT---` | `grade.py` | Student requests grading |
 
 The master `SKILL.md` detects the block type and routes to the appropriate specialist agent.
 
@@ -523,7 +523,7 @@ The agent enforces these style rules on **every graded submission**. Violations 
 | S09 | Single blank line between declaration block and first executable statement | No separation |
 | S10 | Meaningful variable names for anything other than loop counters | `int x, y, z, w;` with no context |
 
-> **Note on S02 and C99**: The project compiles with `-std=c99`, which permits variable declarations anywhere in a block. S02 is a *pedagogical style rule*, not a compiler requirement. The `awk` sub-check inside `check_style.sh` detects mid-block declarations and reports them as style violations even when they are legal C99.
+> **Note on S02 and C99**: The project compiles with `-std=c99`, which permits variable declarations anywhere in a block. S02 is a *pedagogical style rule*, not a compiler requirement. The check inside `check_style.py` detects mid-block declarations and reports them as style violations even when they are legal C99.
 
 ### 10.2 Style in Hints
 
@@ -632,8 +632,8 @@ Student                   VS Code Task Runner         Agent (LLM)
   |                          |                           |
   | Run: REVA: Get Help      |                           |
   |------------------------->|                           |
-  |                          | compile_check.sh          |
-  |                          | check_style.sh            |
+  |                          | compile_check.py          |
+  |                          | check_style.py            |
   |                          | Build context block       |
   |                          | Write to help_context.txt |
   |<-------------------------|                           |
@@ -649,8 +649,8 @@ Student                   VS Code Task Runner         Agent (LLM)
   |                           |                          |
   | Run: REVA: Grade My Code  |                          |
   |-------------------------->|                          |
-  |                           | compile_check.sh         |
-  |                           | check_style.sh           |
+  |                           | compile_check.py         |
+  |                           | check_style.py           |
   |                           | run test_cases           |
   |                           | Build grade context      |
   |                           | Write grade_context.txt  |
@@ -670,7 +670,7 @@ Student                   VS Code Task Runner         Agent (LLM)
 
 ### 12.2 Exercise Template Format
 
-The `.c` file created by `next.sh` contains this structure in its comment header:
+The `.c` file created by `next.py` contains this structure in its comment header:
 
 | Section | Content |
 |---|---|
@@ -699,31 +699,31 @@ All scripts are in `scripts/` and contain no LLM calls. They are the data layer 
 
 | Script | Language | Purpose |
 |---|---|---|
-| `parse_exercise_filename.sh` | Bash | Extract TOPIC, LEVEL, VARIANT, STUDENT_ID from a filename |
-| `compile_check.sh` | Bash | Compile with gcc and capture errors/warnings |
-| `check_style.sh` | Bash | Check S01–S10 style rules using cppcheck + awk |
-| `next.sh` | Bash | Read progress, select next exercise, create the .c template file |
-| `help.sh` | Bash | Build and print the `REVA-TUTOR-CONTEXT` block for the agent |
-| `grade.sh` | Bash | Build and print the `REVA-TUTOR-GRADE-CONTEXT` block with test results |
-| `init_student.sh` | Bash | Register a new student, create progress JSON |
+| `parse_exercise_filename.py` | Python 3 | Extract TOPIC, LEVEL, VARIANT, STUDENT_ID from a filename |
+| `compile_check.py` | Python 3 | Compile with gcc and capture errors/warnings |
+| `check_style.py` | Python 3 | Check S01–S10 style rules using cppcheck + regex |
+| `next.py` | Python 3 | Read progress, select next exercise, create the .c template file |
+| `help.py` | Python 3 | Build and print the `REVA-TUTOR-CONTEXT` block for the agent |
+| `grade.py` | Python 3 | Build and print the `REVA-TUTOR-GRADE-CONTEXT` block with test results |
+| `init_student.py` | Python 3 | Register a new student, create progress JSON |
 | `make_template.py` | Python 3 | Generate the .c template file from exercise library data |
 
 ### 13.2 Detailed Script Reference
 
-#### `parse_exercise_filename.sh`
+#### `parse_exercise_filename.py`
 
 | Property | Detail |
 |---|---|
 | **Purpose** | Parse a `.c` filename following the `TOPIC_Ln_variant_studentid.c` convention |
 | **Input** | Single argument: the `.c` filename (path or basename) |
-| **Output** | Shell variable assignments: `TOPIC=`, `LEVEL=`, `VARIANT=`, `STUDENT_ID=` |
+| **Output** | JSON object: `{"TOPIC": ..., "LEVEL": ..., "VARIANT": ..., "STUDENT_ID": ...}` |
 | **Exit code** | 0 on success; 1 if filename does not match convention |
-| **Used by** | `help.sh`, `grade.sh` |
-| **Dependencies** | bash built-ins only |
+| **Used by** | `help.py`, `grade.py` |
+| **Dependencies** | Python 3 standard library only |
 
 ---
 
-#### `compile_check.sh`
+#### `compile_check.py`
 
 | Property | Detail |
 |---|---|
@@ -731,26 +731,26 @@ All scripts are in `scripts/` and contain no LLM calls. They are the data layer 
 | **Input** | Single argument: path to `.c` file |
 | **Compiler flags** | `gcc -Wall -Wextra -Wpedantic -std=c99` |
 | **Output** | `compile_status: OK` or `compile_status: ERROR` followed by `compile_output: |` and indented compiler messages |
-| **Binary location** | `/tmp/reva_tutor_bin` (consumed by `grade.sh` for test execution) |
+| **Binary location** | `/tmp/reva_tutor_bin` (consumed by `grade.py` for test execution) |
 | **Exit code** | Mirrors gcc exit code |
 | **Dependencies** | `gcc` |
 
 ---
 
-#### `check_style.sh`
+#### `check_style.py`
 
 | Property | Detail |
 |---|---|
 | **Purpose** | Check S01–S10 style rules and produce a violations list |
 | **Input** | Single argument: path to `.c` file |
 | **Output** | `style_status: OK` or `style_status: VIOLATIONS` followed by `style_output: |` and indented violation lines |
-| **Rules checked** | S01 (one statement/line), S03 (magic numbers via awk), S04 (indentation via cppcheck), S05 (function comments via awk), S06 (void main via grep), S07 (unused vars via cppcheck), S09 (blank line after declarations via awk) |
-| **Important note** | S02 (declarations at block top) is checked by a custom awk script, not cppcheck, because `-std=c99` allows mid-block declarations at the compiler level |
-| **Dependencies** | `cppcheck`, `awk`, `grep` |
+| **Rules checked** | S01 (one statement/line), S03 (magic numbers via regex), S04 (indentation via cppcheck), S05 (function comments via regex), S06 (void main via regex), S07 (unused vars via cppcheck), S09 (blank line after declarations via regex) |
+| **Important note** | S02 (declarations at block top) is checked by a custom regex pattern, not cppcheck, because `-std=c99` allows mid-block declarations at the compiler level |
+| **Dependencies** | `cppcheck` |
 
 ---
 
-#### `next.sh`
+#### `next.py`
 
 | Property | Detail |
 |---|---|
@@ -762,11 +762,11 @@ All scripts are in `scripts/` and contain no LLM calls. They are the data layer 
 | **Selection logic** | Lowest `syllabus_unit` topic with `assigned_level != null` and `demonstrated_level < 3`; then lowest unused variant at `assigned_level` |
 | **Variant selection** | Checks `sessions` history to avoid re-assigning attempted variants |
 | **Exit code** | 1 if no progress file found |
-| **Dependencies** | `jq`, `python3`, `make_template.py` |
+| **Dependencies** | `python3`, `make_template.py` |
 
 ---
 
-#### `help.sh`
+#### `help.py`
 
 | Property | Detail |
 |---|---|
@@ -776,26 +776,26 @@ All scripts are in `scripts/` and contain no LLM calls. They are the data layer 
 | **Help counter** | Tracked in `/tmp/reva_help_<student_id>_<exercise_id>` (per-exercise, persists within a session) |
 | **Output** | Structured context block between `---REVA-TUTOR-CONTEXT---` and `---END-REVA-TUTOR-CONTEXT---` delimiters, containing: student_id, exercise_id, assigned_level, help_request_n, compile output, style output, student code, problem statement |
 | **Exit code** | 1 if no progress file found or filename parse fails |
-| **Dependencies** | `parse_exercise_filename.sh`, `compile_check.sh`, `check_style.sh`, `jq` |
+| **Dependencies** | `parse_exercise_filename.py`, `compile_check.py`, `check_style.py` |
 
 ---
 
-#### `grade.sh`
+#### `grade.py`
 
 | Property | Detail |
 |---|---|
 | **Purpose** | Build the `REVA-TUTOR-GRADE-CONTEXT` block with test results for the grade agent |
 | **Input** | Single argument: path to `.c` file |
-| **Reads** | Exercise files (test_cases array), `/tmp/reva_tutor_bin` (compiled binary from compile_check.sh) |
+| **Reads** | Exercise files (test_cases array), `/tmp/reva_tutor_bin` (compiled binary from compile_check.py) |
 | **Test execution** | Iterates over all `test_cases` in the exercise JSON; pipes `input` via stdin to the compiled binary with `timeout 5` to prevent hanging |
 | **Test result format** | `PASS: <label>` or `FAIL: <label>` with `Expected:` and `Got:` lines |
 | **Output** | Structured block between `---REVA-TUTOR-GRADE-CONTEXT---` and `---END-REVA-TUTOR-GRADE-CONTEXT---` delimiters, containing: student_id, exercise_id, compile output, style output, test_results, student_code |
 | **Exit code** | 1 if filename parse fails |
-| **Dependencies** | `parse_exercise_filename.sh`, `compile_check.sh`, `check_style.sh`, `jq`, `timeout` |
+| **Dependencies** | `parse_exercise_filename.py`, `compile_check.py`, `check_style.py` |
 
 ---
 
-#### `init_student.sh`
+#### `init_student.py`
 
 | Property | Detail |
 |---|---|
@@ -805,7 +805,7 @@ All scripts are in `scripts/` and contain no LLM calls. They are the data layer 
 | **Initial state** | `FUNC` (ACP Unit 1): `assigned_level: 1` (or `_prereq_INTRO`: `1` if grade is low); all other topics: `assigned_level: null` |
 | **Error** | Aborts if progress file already exists |
 | **Output** | Confirmation message with student name, section, and 1st sem grade |
-| **Dependencies** | `date`, `mkdir` |
+| **Dependencies** | Python 3 standard library only |
 
 ---
 
@@ -829,10 +829,10 @@ The `.vscode/tasks.json` exposes these tasks in the VS Code task runner (`Ctrl+S
 
 | Task Label | Command | Shortcut Use |
 |---|---|---|
-| REVA: Get Help | `bash scripts/help.sh ${file}` | Active `.c` file → help context |
-| REVA: Grade My Code | `bash scripts/grade.sh ${file}` | Active `.c` file → grade context |
-| REVA: Next Exercise | `bash scripts/next.sh ${input:studentId}` | Prompt for student ID → create exercise file |
-| REVA: Register Student | `bash scripts/init_student.sh ...` | One-time student registration |
+| REVA: Get Help | `python scripts/help.py ${file}` | Active `.c` file → help context |
+| REVA: Grade My Code | `python scripts/grade.py ${file}` | Active `.c` file → grade context |
+| REVA: Next Exercise | `python scripts/next.py ${input:studentId}` | Prompt for student ID → create exercise file |
+| REVA: Register Student | `python scripts/init_student.py ...` | One-time student registration |
 
 ---
 

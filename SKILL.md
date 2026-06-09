@@ -18,9 +18,9 @@ description: >
 Before fulfilling any request, ensure the student's environment is ready and their status is known:
 
 1.  **Check Dependencies**:
-    - Use `run_in_terminal` to check `bash --version` and `python --version` (or `python`).
-    - If `bash` is missing: Inform the student that **Git for Windows** is required for the scripts to run.
+    - Use `run_in_terminal` to check `python --version` (or `python3`).
     - If `python` is missing: Guide them to install Python 3 and ensure "Add to PATH" is checked.
+    - Verify GCC is available with `gcc --version`.
 
 2.  **Verify Registration**:
     - List `student_data/progress/` to see if the student has a profile.
@@ -62,9 +62,9 @@ GRADE → agents/grade_agent.md
 
 | Student says | Response |
 |---|---|
-| "Give me my next exercise" / "assign" / "next" | Instruct the student: `Run: ./scripts/next.sh <your_student_id>` in the project terminal |
-| "How do I set up?" | Instruct: `Run: ./scripts/init_student.sh <id> "<Name>" "<Section>" "<1st Sem Grade>"`, then `./scripts/next.sh <id>` |
-| General C question (no context block) | Answer briefly but remind them to use the workflow: write code → `help.sh` → paste context → get Socratic help |
+| "Give me my next exercise" / "assign" / "next" | Instruct the student: `Run: python scripts/next.py <your_student_id>` in the project terminal |
+| "How do I set up?" | Instruct: `Run: python scripts/init_student.py <id> "<Name>" "<Section>" "<1st Sem Grade>"`, then `python scripts/next.py <id>` |
+| General C question (no context block) | Answer briefly but remind them to use the workflow: write code → run **REVA: Get Help** task → paste context → get Socratic help |
 | Asks to see their progress | Read `student_data/progress/<student_id>.json` and summarise topic levels and recent scores |
 
 ---

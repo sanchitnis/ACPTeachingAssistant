@@ -2,7 +2,7 @@
 **Rules S01–S10 — Effective from Day 1**
 
 All student code submitted through the REVA C Tutor must satisfy these rules.
-Violations are checked automatically by `scripts/check_style.sh` and deduct from your grade.
+Violations are checked automatically by `scripts/check_style.py` and deduct from your grade.
 
 ---
 

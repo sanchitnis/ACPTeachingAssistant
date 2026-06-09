@@ -16,17 +16,12 @@ The tutor's goal is to build your mental execution model. It will **never** give
 
 Before starting, ensure you have the following tools installed and available in your system path:
 
-### Windows Users (Crucial)
-1.  **Git for Windows**: [Download here](https://git-scm.com/download/win). During installation, ensure "**Add Git to PATH**" is selected. This provides the `bash` environment required by the scripts.
-2.  **Verify Bash**: Open PowerShell and type `bash --version`. If it fails, you must install Git for Windows.
-
 ### Required Tools (All Platforms)
 
 | Tool | Install command (Ubuntu/WSL) | Windows Recommendation |
 |---|---|---|
 | GCC | `sudo apt install gcc` | [MinGW-w64](https://www.mingw-w64.org/) or [Choco](https://chocolatey.org/) |
 | cppcheck | `sudo apt install cppcheck` | `choco install cppcheck` |
-| jq | `sudo apt install jq` | `choco install jq` or [Download Binary](https://jqlang.github.io/jq/download/) |
 | Python 3 | `sudo apt install python3` | [Python.org](https://www.python.org/downloads/windows/) |
 
 ## Installation
@@ -43,11 +38,7 @@ To install ACPTeachingAssistant on your computer, follow these simple steps:
 
 1. **Download**: Download the latest release source code ZIP from the [latest Release](https://github.com/sanchitnis/ACPTeachingAssistant/releases/latest).
 2. **Extract**: Unzip the downloaded `.zip` file to any folder on your computer.
-3. Open vscode and open the root folder of this repo. 
-4. After installing, make the scripts executable by running this in your terminal once:
-```bash
-chmod +x scripts/*.sh
-```
+3. **Open in VS Code**: Open the root folder of this repository as a workspace in VS Code.
 
 ---
 
@@ -98,7 +89,7 @@ The agent is your guide, not your ghostwriter.
 
 - **File Naming**: Exercises must follow `TOPIC_Ln_variant_studentid.c`. If you rename them manually, scripts may fail.
 - **Active File**: Always keep the exercise `.c` file active in your editor when running **Get Help** or **Grade My Code**.
-- **Tool Errors**: If `help.sh` fails, ensure `gcc`, `cppcheck`, and `jq` are correctly installed.
+- **Tool Errors**: If the help/grade tasks fail, ensure `gcc` and `cppcheck` are correctly installed and in your PATH.
 
 ---
 

@@ -33,13 +33,13 @@ reva-c-tutor/
 │   └── grade_agent.md          ← Grading specialist
 │
 ├── scripts/                    ← Data layer (no LLM calls)
-│   ├── init_student.sh         ← Register a new student
-│   ├── next.sh                 ← Assign next exercise
-│   ├── help.sh                 ← Generate help context block
-│   ├── grade.sh                ← Generate grade context block
-│   ├── parse_exercise_filename.sh
-│   ├── compile_check.sh
-│   ├── check_style.sh
+│   ├── init_student.py         ← Register a new student
+│   ├── next.py                 ← Assign next exercise
+│   ├── help.py                 ← Generate help context block
+│   ├── grade.py                ← Generate grade context block
+│   ├── parse_exercise_filename.py
+│   ├── compile_check.py
+│   ├── check_style.py
 │   └── make_template.py
 │
 ├── exercises/
@@ -95,7 +95,7 @@ If a script fails:
 - Student progress is in `student_data/progress/<student_id>.json`
 - Session logs are in `student_data/sessions/<student_id>/`
 - The grading rubric is in `rubrics/rubric_master.md`
-- Run scripts with `bash -x` for detailed execution logs.
+- Run scripts with Python debugging (use `-m pdb` or add print statements)
 
 ### Technical Dependencies
 

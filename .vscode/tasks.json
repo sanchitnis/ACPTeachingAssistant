@@ -4,14 +4,8 @@
     {
       "label": "REVA: Get Help",
       "type": "shell",
-      "command": "bash",
-      "args": ["scripts/help.sh", "${file}"],
-      "options": {
-        "env": {
-          "CHERE_INVOKING": "1",
-          "MSYSTEM": "MINGW64"
-        }
-      },
+      "command": "python",
+      "args": ["scripts/help.py", "${file}"],
       "group": "test",
       "presentation": {
         "reveal": "always",
@@ -23,14 +17,8 @@
     {
       "label": "REVA: Grade My Code",
       "type": "shell",
-      "command": "bash",
-      "args": ["scripts/grade.sh", "${file}"],
-      "options": {
-        "env": {
-          "CHERE_INVOKING": "1",
-          "MSYSTEM": "MINGW64"
-        }
-      },
+      "command": "python",
+      "args": ["scripts/grade.py", "${file}"],
       "group": "test",
       "presentation": {
         "reveal": "always",
@@ -42,14 +30,8 @@
     {
       "label": "REVA: Next Exercise",
       "type": "shell",
-      "command": "bash",
-      "args": ["scripts/next.sh", "${input:studentId}"],
-      "options": {
-        "env": {
-          "CHERE_INVOKING": "1",
-          "MSYSTEM": "MINGW64"
-        }
-      },
+      "command": "python",
+      "args": ["scripts/next.py", "${input:studentId}"],
       "group": "test",
       "presentation": {
         "reveal": "always",
@@ -61,20 +43,14 @@
     {
       "label": "REVA: Register Student",
       "type": "shell",
-      "command": "bash",
+      "command": "python",
       "args": [
-        "scripts/init_student.sh",
+        "scripts/init_student.py",
         "${input:studentId}",
         "${input:studentName}",
         "${input:studentSection}",
         "${input:studentGrade}"
       ],
-      "options": {
-        "env": {
-          "CHERE_INVOKING": "1",
-          "MSYSTEM": "MINGW64"
-        }
-      },
       "group": "test",
       "presentation": {
         "reveal": "always",
